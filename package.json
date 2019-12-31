@@ -1,12 +1,20 @@
 
 {
   "name": "react-native-waterflow-list",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "built/index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ZakZheng/react-native-waterflow-list.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ZakZheng/react-native-waterflow-list/issues"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc -w --outDir ./built"
+    "start": "tsc -w --outDir ./build"
   },
   "keywords": [
     "react-native"
