@@ -1,0 +1,30 @@
+
+{
+  "name": "react-native-waterflow-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "built/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc -w --outDir ./built"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "ZakZheng",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-native": "*",
+    "ascoders-tslint-config": "^1.0.2",
+    "react": "*",
+    "react-native": "*",
+    "tslint": "^5.8.0",
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "^3.7.4"
+  }
+}
