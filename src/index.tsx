@@ -67,14 +67,8 @@ const WaterFlow = <T extends {}>(props: IWaterflowProps<T>, ref: typeof React.us
     <Columns
       {...props}
       ref={WaterflowRef}
-      columnFlatListProps={props.columnFlatListProps}
-      columnsFlatListProps={props.columnsFlatListProps}
-      numColumns={props.numColumns}
       data={data}
-      heightForItem={props.heightForItem}
       onEndReached={(e: NativeSyntheticEvent<NativeScrollEvent>) => onEndReached(e, props.onEndReached)}
-      keyForItem={props.keyForItem}
-      renderItem={props.renderItem}
     />
   );
 };

@@ -1,1 +1,1 @@
-export declare function Colunm({ columnFlatListProps, ...props }: any): any;
+export declare function Colunm({ columnFlatListProps, renderItem, ...props }: any): any;

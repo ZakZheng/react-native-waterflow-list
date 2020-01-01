@@ -4,19 +4,19 @@ import {
   FlatList,
 } from 'react-native';
 
-export function Colunm({ columnFlatListProps, ...props }: any) {
+export function Colunm({ columnFlatListProps, renderItem, ...props }: any) {
   return (
     <FlatList
       removeClippedSubviews={true}
-      style={{ flex: 1 }}
-      {...columnFlatListProps}
       {...props}
+      {...columnFlatListProps}
+      style={[{ flex: 1, }, { ...columnFlatListProps?.style }]}
       renderItem={({ item, index }: {
         item: { onLayout: () => void },
         index: number
       }) => {
         return <View onLayout={item.onLayout}>
-          {props.renderItem({ item, index })}
+          {renderItem({ item, index })}
         </View>
       }}
     />

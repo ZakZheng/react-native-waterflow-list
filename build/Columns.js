@@ -1,4 +1,15 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __spreadArrays = (this && this.__spreadArrays) || function () {
     for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
     for (var r = Array(s), k = 0, i = 0; i < il; i++)
@@ -10,12 +21,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_native_1 = require("react-native");
 var Column_1 = require("./Column");
-var Columns = function (props, ref) {
+var Columns = function (_a, ref) {
+    var columnsFlatListProps = _a.columnsFlatListProps, props = __rest(_a, ["columnsFlatListProps"]);
     var numColumns = props.numColumns;
-    var _a = React.useState(false), addIteming = _a[0], setAddIteming = _a[1];
-    var _b = React.useState(Array(numColumns)
+    var _b = React.useState(false), addIteming = _b[0], setAddIteming = _b[1];
+    var _c = React.useState(Array(numColumns)
         .fill('')
-        .map(function () { return []; })), columns = _b[0], setColumns = _b[1];
+        .map(function () { return []; })), columns = _c[0], setColumns = _c[1];
     var columnsHeight = React.useMemo(function () { return Array(numColumns).fill(0); }, [numColumns]);
     var minColumnsIndex = React.useMemo(function () { return 0; }, [numColumns]);
     var keysList = React.useMemo(function () { return []; }, [numColumns]);
@@ -96,9 +108,11 @@ var Columns = function (props, ref) {
     }); });
     return (<react_native_1.FlatList keyExtractor={function (item, index) {
         return "item-" + index;
-    }} data={columns} onScroll={props.onEndReached} style={{
-        flex: 1,
-    }} removeClippedSubviews={true} {...props.columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
+    }} data={columns} onScroll={props.onEndReached} 
+    // style={{
+    //   flex: 1,
+    // }}
+    removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
         return <Column_1.Colunm columnFlatListProps={props.columnFlatListProps} key={"column-" + index} listKey={"column-" + index} data={item} renderItem={props.renderItem}/>;
     }}/>);

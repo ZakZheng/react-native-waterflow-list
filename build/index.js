@@ -90,7 +90,7 @@ var WaterFlow = function (props, ref) {
             addIteming: (_b = WaterflowRef.current) === null || _b === void 0 ? void 0 : _b.addIteming,
         });
     });
-    return (<Columns_1.default {...props} ref={WaterflowRef} columnFlatListProps={props.columnFlatListProps} columnsFlatListProps={props.columnsFlatListProps} numColumns={props.numColumns} data={data} heightForItem={props.heightForItem} onEndReached={function (e) { return onEndReached(e, props.onEndReached); }} keyForItem={props.keyForItem} renderItem={props.renderItem}/>);
+    return (<Columns_1.default {...props} ref={WaterflowRef} data={data} onEndReached={function (e) { return onEndReached(e, props.onEndReached); }}/>);
 };
 exports.default = React.forwardRef(WaterFlow);
 //# sourceMappingURL=index.js.map

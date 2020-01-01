@@ -13,7 +13,7 @@ export interface IColumnsProps<T> {
   numColumns: number
   heightForItem?: (item: T) => number
   data: T[]
-  columnsFlatListProps: {
+  columnsFlatListProps?: {
     onEndReached?: () => void
     onRefresh?: () => void
   }
@@ -32,7 +32,7 @@ const Columns = <T extends {
   itemHeight: number
   onLayout: any
   _keyForItem_: any
-}>(props: IColumnsProps<T>, ref: typeof React.useRef) => {
+}>({ columnsFlatListProps, ...props }: IColumnsProps<T>, ref: typeof React.useRef) => {
   const { numColumns } = props;
 
   const [addIteming, setAddIteming] = React.useState(false)
@@ -141,11 +141,11 @@ const Columns = <T extends {
       }}
       data={columns}
       onScroll={props.onEndReached}
-      style={{
-        flex: 1,
-      }}
+      // style={{
+      //   flex: 1,
+      // }}
       removeClippedSubviews={true}
-      {...props.columnsFlatListProps}
+      {...columnsFlatListProps}
       numColumns={props.numColumns}
       renderItem={({ item, index }: { item: T, index: number }) => {
         return <Colunm

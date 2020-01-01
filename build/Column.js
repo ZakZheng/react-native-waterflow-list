@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -14,11 +25,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_native_1 = require("react-native");
 function Colunm(_a) {
-    var columnFlatListProps = _a.columnFlatListProps, props = __rest(_a, ["columnFlatListProps"]);
-    return (<react_native_1.FlatList removeClippedSubviews={true} style={{ flex: 1 }} {...columnFlatListProps} {...props} renderItem={function (_a) {
+    var _b;
+    var columnFlatListProps = _a.columnFlatListProps, renderItem = _a.renderItem, props = __rest(_a, ["columnFlatListProps", "renderItem"]);
+    return (<react_native_1.FlatList removeClippedSubviews={true} {...props} {...columnFlatListProps} style={[{ flex: 1, }, __assign({}, (_b = columnFlatListProps) === null || _b === void 0 ? void 0 : _b.style)]} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
         return <react_native_1.View onLayout={item.onLayout}>
-          {props.renderItem({ item: item, index: index })}
+          {renderItem({ item: item, index: index })}
         </react_native_1.View>;
     }}/>);
 }
