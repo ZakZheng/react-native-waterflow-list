@@ -6,7 +6,7 @@ export interface IWaterflowProps<T> {
     heightForItem?: IColumnsProps<T>['heightForItem'];
     renderItem: IColumnsProps<T>['renderItem'];
     columnsFlatListProps?: IColumnsProps<T>['columnsFlatListProps'];
-    columnFlatListProps?: IColumnsProps<T>['columnFlatListProps'];
+    columnFlatListProps: IColumnsProps<T>['columnFlatListProps'];
     onEndReached: () => Promise<any>;
 }
 declare const _default: any;

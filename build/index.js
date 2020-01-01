@@ -37,7 +37,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
-var react_native_1 = require("react-native");
 var Columns_1 = require("./Columns");
 var utils_1 = require("./utils");
 var WaterFlow = function (props, ref) {
@@ -51,24 +50,20 @@ var WaterFlow = function (props, ref) {
         var loading = false;
         // 使用 onScroll 代替 onEndReached, 避免有时无法触发 bug
         return function (event, cb) { return __awaiter(void 0, void 0, void 0, function () {
-            var y, height, contentHeight, _cb;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                if (typeof ((_a = props.columnsFlatListProps) === null || _a === void 0 ? void 0 : _a.onEndReached) === 'function') {
-                    props.columnsFlatListProps.onEndReached();
-                }
+            var tempCb;
+            var _a;
+            return __generator(this, function (_b) {
                 // 请求中和 renderItem 未加载完全时无法再次触发回调
-                if (loading || ((_b = WaterflowRef.current) === null || _b === void 0 ? void 0 : _b.addIteming))
+                if (loading || ((_a = WaterflowRef.current) === null || _a === void 0 ? void 0 : _a.addIteming)) {
                     return [2 /*return*/];
-                y = event.nativeEvent.contentOffset.y;
-                height = event.nativeEvent.layoutMeasurement.height;
-                contentHeight = event.nativeEvent.contentSize.height;
-                if (y + height >= contentHeight - react_native_1.Dimensions.get('screen').height) {
+                }
+                ;
+                if (utils_1.checkScrollEnd(event)) {
                     loading = true;
                     if (typeof cb === 'function') {
-                        _cb = cb();
-                        if (utils_1.isPromise(_cb)) {
-                            _cb.then(function () {
+                        tempCb = cb();
+                        if (utils_1.isPromise(tempCb)) {
+                            tempCb.then(function () {
                                 loading = false;
                             }).catch(function () {
                                 loading = false;

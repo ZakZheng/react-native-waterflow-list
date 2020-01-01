@@ -1,11 +1,10 @@
 import * as React from 'react';
 import {
-  Dimensions,
-  NativeSyntheticEvent,
   NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
-import Columns, { IColumnsProps, IColumnsHandles } from './Columns';
-import { isPromise } from './utils';
+import Columns, { IColumnsHandles, IColumnsProps, } from './Columns';
+import { checkScrollEnd, isPromise } from './utils';
 
 export interface IWaterflowProps<T> {
   data: T[]
@@ -15,7 +14,7 @@ export interface IWaterflowProps<T> {
   renderItem: IColumnsProps<T>['renderItem']
 
   columnsFlatListProps?: IColumnsProps<T>['columnsFlatListProps']
-  columnFlatListProps?: IColumnsProps<T>['columnFlatListProps']
+  columnFlatListProps: IColumnsProps<T>['columnFlatListProps']
   onEndReached: () => Promise<any>
 }
 
@@ -32,20 +31,14 @@ const WaterFlow = <T extends {}>(props: IWaterflowProps<T>, ref: typeof React.us
     let loading = false;
     // 使用 onScroll 代替 onEndReached, 避免有时无法触发 bug
     return async (event: NativeSyntheticEvent<NativeScrollEvent>, cb: () => Promise<any>) => {
-      if (typeof props.columnsFlatListProps?.onEndReached === 'function') {
-        props.columnsFlatListProps.onEndReached()
-      }
       // 请求中和 renderItem 未加载完全时无法再次触发回调
-      if (loading || WaterflowRef.current?.addIteming) return;
-      let y = event.nativeEvent.contentOffset.y;
-      let height = event.nativeEvent.layoutMeasurement.height;
-      let contentHeight = event.nativeEvent.contentSize.height;
-      if (y + height >= contentHeight - Dimensions.get('screen').height) {
+      if (loading || WaterflowRef.current?.addIteming) { return };
+      if (checkScrollEnd(event)) {
         loading = true;
         if (typeof cb === 'function') {
-          let _cb = cb();
-          if (isPromise(_cb)) {
-            _cb.then(() => {
+          const tempCb = cb();
+          if (isPromise(tempCb)) {
+            tempCb.then(() => {
               loading = false;
             }).catch(() => {
               loading = false;

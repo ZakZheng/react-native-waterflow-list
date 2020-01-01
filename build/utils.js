@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var react_native_1 = require("react-native");
 // 扁平化数组
 function flat(arr) {
     var arrResult = [];
@@ -25,4 +26,11 @@ function sleep(ms) {
 }
 exports.sleep = sleep;
 ;
+function checkScrollEnd(event) {
+    var y = event.nativeEvent.contentOffset.y;
+    var height = event.nativeEvent.layoutMeasurement.height;
+    var contentHeight = event.nativeEvent.contentSize.height;
+    return y + height >= contentHeight - react_native_1.Dimensions.get('screen').height;
+}
+exports.checkScrollEnd = checkScrollEnd;
 //# sourceMappingURL=utils.js.map

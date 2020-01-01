@@ -1,3 +1,5 @@
+import { Dimensions, NativeSyntheticEvent, NativeScrollEvent, } from 'react-native';
+
 // 扁平化数组
 export function flat(arr: any[]) {
   let arrResult: any[] = [];
@@ -20,3 +22,10 @@ export function isPromise(e: Promise<any>) {
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+export function checkScrollEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+  let y = event.nativeEvent.contentOffset.y;
+  let height = event.nativeEvent.layoutMeasurement.height;
+  let contentHeight = event.nativeEvent.contentSize.height;
+  return y + height >= contentHeight - Dimensions.get('screen').height
+}

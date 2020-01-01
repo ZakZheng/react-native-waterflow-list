@@ -29,25 +29,45 @@ var Columns = function (_a, ref) {
         .fill('')
         .map(function () { return []; })), columns = _c[0], setColumns = _c[1];
     var columnsHeight = React.useMemo(function () { return Array(numColumns).fill(0); }, [numColumns]);
-    var minColumnsIndex = React.useMemo(function () { return 0; }, [numColumns]);
-    var keysList = React.useMemo(function () { return []; }, [numColumns]);
+    var keysList = React.useMemo(function () { return []; }, []);
+    var heightForItemAddItems = function (data) {
+        var tempColumns = Array(numColumns)
+            .fill([])
+            .map(function () { return []; });
+        // setColumns(tempColumns)
+        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+            var item = data_1[_i];
+            item._keyForItem_ = props.keyForItem(item);
+            // 已经渲染则跳过
+            if (checkIsExist(item._keyForItem_)) {
+                continue;
+            }
+            // 获取总高度最小列
+            var addItemValue = addItem(item);
+            var height = props.heightForItem(item);
+            columnsHeight[addItemValue.minColumnsIndex] += height;
+            tempColumns = addItemValue.tempColumns;
+        }
+        return setColumns(tempColumns);
+    };
     var addItems = function (data) {
         if (data.length === 0) {
             return setAddIteming(false);
         }
         setAddIteming(true);
         var item = data.shift();
+        item._keyForItem_ = props.keyForItem(item);
         // 已经渲染则跳过
-        if (checkIsExist(item)) {
+        if (checkIsExist(item._keyForItem_)) {
             return addItems(data);
         }
-        var _columns = addItem(item, addItems.bind(addItems, data))._columns;
-        setColumns(_columns);
+        var tempColumns = addItem(item, addItems.bind(addItems, data)).tempColumns;
+        setColumns(tempColumns);
     };
     var addItem = function (item, cb) {
-        var _columns = __spreadArrays(columns);
-        item._keyForItem_ = props.keyForItem(item);
-        keysList.push(item._keyForItem_);
+        var tempColumns = __spreadArrays(columns);
+        // 获取总高度最小列
+        var minColumnsIndex = __spreadArrays(columnsHeight).indexOf(Math.min.apply(Math, __spreadArrays(columnsHeight)));
         // 获取当前renderItem高度,获取后渲染下一个renderItem,直到全部渲染完毕
         if (typeof cb === 'function') {
             item.onLayout = function (e) {
@@ -59,46 +79,32 @@ var Columns = function (_a, ref) {
             };
         }
         ;
-        // 获取总高度最小列
-        minColumnsIndex = __spreadArrays(columnsHeight).indexOf(Math.min.apply(Math, __spreadArrays(columnsHeight)));
-        var currentColumn = _columns[minColumnsIndex];
+        var currentColumn = tempColumns[minColumnsIndex];
         currentColumn.push(item);
-        return { _columns: _columns, minColumnsIndex: minColumnsIndex };
+        return { tempColumns: tempColumns, minColumnsIndex: minColumnsIndex };
     };
     // 清除所有renderItem
     var clear = function () {
         for (var index = 0; index < columnsHeight.length; index++) {
             columnsHeight[index] = 0;
         }
-        keysList = [];
+        keysList.splice(0, keysList.length);
         setColumns(Array(numColumns)
             .fill([])
             .map(function () { return []; }));
     };
     // 通过 _keyForItem_ 检查是否已经渲染
-    var checkIsExist = React.useCallback(function (item) {
-        var checkIsExist = keysList.indexOf(props.keyForItem(item)) !== -1;
-        return checkIsExist;
-    }, [columns]);
+    var checkIsExist = React.useCallback(function (key) {
+        var check = keysList.indexOf(key) !== -1;
+        // 如果未渲染则保存key
+        if (!check) {
+            keysList.push(key);
+        }
+        return check;
+    }, [columns, keysList]);
     React.useEffect(function () {
         if (typeof props.heightForItem === 'function') {
-            var _columns = Array(numColumns)
-                .fill([])
-                .map(function () { return []; });
-            setColumns(_columns);
-            for (var _i = 0, _a = props.data; _i < _a.length; _i++) {
-                var item = _a[_i];
-                // 已经渲染则跳过
-                if (checkIsExist(item)) {
-                    continue;
-                }
-                // 获取总高度最小列
-                var addItemValue = addItem(item);
-                var height = props.heightForItem(item);
-                columnsHeight[addItemValue.minColumnsIndex] += height;
-                _columns = addItemValue._columns;
-            }
-            return setColumns(_columns);
+            return heightForItemAddItems(props.data.slice());
         }
         addItems(props.data.slice());
     }, [props.data]);
@@ -106,13 +112,7 @@ var Columns = function (_a, ref) {
         clear: clear,
         addIteming: addIteming,
     }); });
-    return (<react_native_1.FlatList keyExtractor={function (item, index) {
-        return "item-" + index;
-    }} data={columns} onScroll={props.onEndReached} 
-    // style={{
-    //   flex: 1,
-    // }}
-    removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
+    return (<react_native_1.FlatList keyExtractor={function (item) { return "item-" + item._keyForItem_; }} data={columns} onScroll={props.onEndReached} removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
         return <Column_1.Colunm columnFlatListProps={props.columnFlatListProps} key={"column-" + index} listKey={"column-" + index} data={item} renderItem={props.renderItem}/>;
     }}/>);

@@ -1,26 +1,22 @@
 import * as React from 'react';
 import {
-  View, FlatList,
+  FlatList,
   LayoutChangeEvent,
-  RefreshControl,
+  NativeScrollEvent,
   NativeSyntheticEvent,
-  NativeScrollEvent
 } from 'react-native';
-import { flat } from './utils';
 import { Colunm } from './Column';
 
 export interface IColumnsProps<T> {
   numColumns: number
   heightForItem?: (item: T) => number
   data: T[]
-  columnsFlatListProps?: {
-    onEndReached?: () => void
-    onRefresh?: () => void
-  }
-  columnFlatListProps: {}
   renderItem: ({ item, index }: { item: T, index: number }) => JSX.Element
   keyForItem: (item: T) => string
   onEndReached: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+
+  columnsFlatListProps?: {}
+  columnFlatListProps?: {}
 }
 export interface IColumnsHandles {
   clear: () => void
@@ -41,10 +37,25 @@ const Columns = <T extends {
       .fill('')
       .map(() => []),
   );
-
   const columnsHeight = React.useMemo(() => Array(numColumns).fill(0), [numColumns]);
-  let minColumnsIndex = React.useMemo(() => 0, [numColumns]);
-  let keysList = React.useMemo(() => [], [numColumns])
+  const keysList = React.useMemo<string[]>(() => [], [])
+  const heightForItemAddItems = (data: T[]) => {
+    let tempColumns = Array(numColumns)
+      .fill([])
+      .map(() => [] as T[])
+    // setColumns(tempColumns)
+    for (const item of data) {
+      item._keyForItem_ = props.keyForItem(item);
+      // 已经渲染则跳过
+      if (checkIsExist(item._keyForItem_)) { continue }
+      // 获取总高度最小列
+      const addItemValue = addItem(item)
+      const height = props.heightForItem!(item)
+      columnsHeight[addItemValue.minColumnsIndex] += height;
+      tempColumns = addItemValue.tempColumns
+    }
+    return setColumns(tempColumns)
+  }
 
   const addItems = (data: T[]): any => {
     if (data.length === 0) {
@@ -53,20 +64,24 @@ const Columns = <T extends {
     setAddIteming(true);
     const item: T = data.shift() as T;
 
+    item._keyForItem_ = props.keyForItem(item);
     // 已经渲染则跳过
-    if (checkIsExist(item)) {
+    if (checkIsExist(item._keyForItem_)) {
       return addItems(data);
     }
 
-    const { _columns } = addItem(item, addItems.bind(addItems, data));
-    setColumns(_columns);
+    const { tempColumns } = addItem(item, addItems.bind(addItems, data));
+    setColumns(tempColumns);
   };
 
   const addItem = (item: T, cb?: () => typeof addItems) => {
-    const _columns = [...columns];
+    const tempColumns = [...columns];
 
-    item._keyForItem_ = props.keyForItem(item);
-    keysList.push(item._keyForItem_)
+    // 获取总高度最小列
+    const minColumnsIndex = [...columnsHeight].indexOf(
+      Math.min.apply(Math, [...columnsHeight]),
+    );
+
     // 获取当前renderItem高度,获取后渲染下一个renderItem,直到全部渲染完毕
     if (typeof cb === 'function') {
       item.onLayout = (e: LayoutChangeEvent) => {
@@ -77,13 +92,10 @@ const Columns = <T extends {
         cb();
       }
     };
-    // 获取总高度最小列
-    minColumnsIndex = [...columnsHeight].indexOf(
-      Math.min.apply(Math, [...columnsHeight]),
-    );
-    const currentColumn = _columns[minColumnsIndex];
+
+    const currentColumn = tempColumns[minColumnsIndex];
     currentColumn.push(item);
-    return { _columns, minColumnsIndex }
+    return { tempColumns, minColumnsIndex }
   };
 
   // 清除所有renderItem
@@ -91,7 +103,7 @@ const Columns = <T extends {
     for (let index = 0; index < columnsHeight.length; index++) {
       columnsHeight[index] = 0
     }
-    keysList = []
+    keysList.splice(0, keysList.length)
     setColumns(
       Array(numColumns)
         .fill([])
@@ -101,30 +113,20 @@ const Columns = <T extends {
 
   // 通过 _keyForItem_ 检查是否已经渲染
   const checkIsExist = React.useCallback(
-    (item: T) => {
-      const checkIsExist = keysList.indexOf(props.keyForItem(item)) !== -1
-      return checkIsExist
-    }
-    ,
-    [columns],
+    (key: string) => {
+      const check = keysList.indexOf(key) !== -1
+      // 如果未渲染则保存key
+      if (!check) {
+        keysList.push(key)
+      }
+      return check
+    },
+    [columns, keysList],
   )
 
   React.useEffect(() => {
     if (typeof props.heightForItem === 'function') {
-      let _columns = Array(numColumns)
-        .fill([])
-        .map(() => [])
-      setColumns(_columns)
-      for (const item of props.data) {
-        // 已经渲染则跳过
-        if (checkIsExist(item)) { continue }
-        // 获取总高度最小列
-        const addItemValue = addItem(item)
-        const height = props.heightForItem(item)
-        columnsHeight[addItemValue.minColumnsIndex] += height;
-        _columns = addItemValue._columns
-      }
-      return setColumns(_columns)
+      return heightForItemAddItems(props.data.slice())
     }
     addItems(props.data.slice());
   }, [props.data]);
@@ -136,14 +138,9 @@ const Columns = <T extends {
 
   return (
     <FlatList
-      keyExtractor={(item: any, index: number) => {
-        return `item-${index}`;
-      }}
+      keyExtractor={(item: T) => `item-${item._keyForItem_}`}
       data={columns}
       onScroll={props.onEndReached}
-      // style={{
-      //   flex: 1,
-      // }}
       removeClippedSubviews={true}
       {...columnsFlatListProps}
       numColumns={props.numColumns}
