@@ -56,13 +56,14 @@ export default () => {
 
   return (
     <WaterFlow
-      data={data}
       ref={WaterFlowRef}
+      data={data}
       keyForItem={item => item.id}
       numColumns={2}
       onEndReached={onLoadMore}
-      // heightForItem={(item) => {
-      //   return computedItemHeight(item) -> number
+      /**  如果高度已知则传此方法 */
+      // heightForItem={item => {
+      //   return item.height;
       // }}
       columnFlatListProps={{
         style: { marginHorizontal: 5, },
@@ -79,21 +80,21 @@ export default () => {
           tintColor={'gray'}
         />
         ,
-        style: {
-          marginHorizontal: 10,
-        },
+        style: { marginHorizontal: 10, },
       }}
-      renderItem={({ item }) => {
-        return (
-          <>
-            <Image
-              style={{ height: item.height, width: item.width }}
-              source={{ uri: item.image_path }}></Image>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>ID:{item.id}</Text>
-            <Text>{item.text}</Text>
-          </>
-        );
+      renderItem={({ item, index }) => {
+        return renderItem(item);
       }}
     />
+  );
+};
+
+const renderItem = item => {
+  return (
+    <View style={{ marginHorizontal: 5, paddingTop: 10 }}>
+      <Image style={{ height: item.height, width: `100%` }} source={{ uri: item.image_path }} />
+      <Text>ID:{item.id}</Text>
+      <Text>{item.text}</Text>
+    </View>
   );
 };
