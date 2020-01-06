@@ -29,7 +29,7 @@ function Colunm(_a) {
     var columnFlatListProps = _a.columnFlatListProps, renderItem = _a.renderItem, props = __rest(_a, ["columnFlatListProps", "renderItem"]);
     return (<react_native_1.FlatList removeClippedSubviews={true} {...props} {...columnFlatListProps} style={[{ flex: 1, }, __assign({}, (_b = columnFlatListProps) === null || _b === void 0 ? void 0 : _b.style)]} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
-        return <react_native_1.View onLayout={item.onLayout}>
+        return <react_native_1.View key={item._keyForItem_} onLayout={item.onLayout}>
           {renderItem({ item: item, index: index })}
         </react_native_1.View>;
     }}/>);

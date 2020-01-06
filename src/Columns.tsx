@@ -1,11 +1,17 @@
 import * as React from 'react';
 import {
   FlatList,
+  FlatListProps,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
 import { Colunm } from './Column';
+
+interface IFlatListProps<T> extends FlatListProps<T> {
+  data?: any
+  renderItem?: any
+}
 
 export interface IColumnsProps<T> {
   numColumns: number
@@ -15,8 +21,8 @@ export interface IColumnsProps<T> {
   keyForItem: (item: T) => string
   onEndReached: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 
-  columnsFlatListProps?: {}
-  columnFlatListProps?: {}
+  columnsFlatListProps?: IFlatListProps<T>
+  columnFlatListProps?: IFlatListProps<T>
 }
 export interface IColumnsHandles {
   clear: () => void
@@ -138,8 +144,8 @@ const Columns = <T extends {
 
   return (
     <FlatList
-      keyExtractor={(item: T) => `item-${item._keyForItem_}`}
       data={columns}
+      keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
       onScroll={props.onEndReached}
       removeClippedSubviews={true}
       {...columnsFlatListProps}
@@ -149,6 +155,7 @@ const Columns = <T extends {
           columnFlatListProps={props.columnFlatListProps}
           key={`column-${index}`}
           listKey={`column-${index}`}
+          keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
           data={item}
           renderItem={props.renderItem}
         />

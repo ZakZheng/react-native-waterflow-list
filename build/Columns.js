@@ -112,9 +112,9 @@ var Columns = function (_a, ref) {
         clear: clear,
         addIteming: addIteming,
     }); });
-    return (<react_native_1.FlatList keyExtractor={function (item) { return "item-" + item._keyForItem_; }} data={columns} onScroll={props.onEndReached} removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
+    return (<react_native_1.FlatList data={columns} keyExtractor={function (columnItem) { return "item-" + columnItem._keyForItem_; }} onScroll={props.onEndReached} removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
-        return <Column_1.Colunm columnFlatListProps={props.columnFlatListProps} key={"column-" + index} listKey={"column-" + index} data={item} renderItem={props.renderItem}/>;
+        return <Column_1.Colunm columnFlatListProps={props.columnFlatListProps} key={"column-" + index} listKey={"column-" + index} keyExtractor={function (columnItem) { return "item-" + columnItem._keyForItem_; }} data={item} renderItem={props.renderItem}/>;
     }}/>);
 };
 exports.default = React.forwardRef(Columns);
