@@ -18,6 +18,7 @@ export interface IWaterflowProps<T> {
   onEndReached: () => Promise<any>
 }
 
+
 const WaterFlow = <T extends {}>(props: IWaterflowProps<T>, ref: typeof React.useRef) => {
   const data = props.data || [];
 
@@ -27,29 +28,29 @@ const WaterFlow = <T extends {}>(props: IWaterflowProps<T>, ref: typeof React.us
    * 上拉加载, 传入一个 Promise 回调, 请求完成后才允许再次触发回调
    * 如果回调不为一个 Promise 对象, 则不做拦截处理
    */
-  const onEndReached = (() => {
-    let loading = false;
-    // 使用 onScroll 代替 onEndReached, 避免有时无法触发 bug
-    return async (event: NativeSyntheticEvent<NativeScrollEvent>, cb: () => Promise<any>) => {
-      // 请求中和 renderItem 未加载完全时无法再次触发回调
-      if (loading || WaterflowRef.current?.addIteming) { return };
-      if (checkScrollEnd(event)) {
-        loading = true;
-        if (typeof cb === 'function') {
-          const tempCb = cb();
-          if (isPromise(tempCb)) {
-            tempCb.then(() => {
+  const onEndReached = React.useCallback(
+    (() => {
+      let loading = false;
+      // 使用 onScroll 代替 onEndReached, 避免有时无法触发 bug
+      return async (event: NativeSyntheticEvent<NativeScrollEvent>, cb: () => Promise<any>) => {
+        // 请求中和 renderItem 未加载完全时无法再次触发回调
+        if (loading || WaterflowRef.current?.addIteming) { return };
+        if (checkScrollEnd(event)) {
+          loading = true;
+          if (typeof cb === 'function') {
+            const tempCb = cb();
+            if (isPromise(tempCb)) {
+              // tslint:disable-next-line:no-console
+              try { await tempCb } catch (err) { console.error(err) }
               loading = false;
-            }).catch(() => {
+            } else {
               loading = false;
-            });
-          } else {
-            loading = false;
+            }
           }
         }
-      }
-    };
-  })();
+      };
+    })(), []);
+
 
   React.useImperativeHandle(ref, () => ({
     clear: WaterflowRef.current?.clear,

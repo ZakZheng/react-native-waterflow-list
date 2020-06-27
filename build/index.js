@@ -46,38 +46,47 @@ var WaterFlow = function (props, ref) {
      * 上拉加载, 传入一个 Promise 回调, 请求完成后才允许再次触发回调
      * 如果回调不为一个 Promise 对象, 则不做拦截处理
      */
-    var onEndReached = (function () {
+    var onEndReached = React.useCallback((function () {
         var loading = false;
         // 使用 onScroll 代替 onEndReached, 避免有时无法触发 bug
         return function (event, cb) { return __awaiter(void 0, void 0, void 0, function () {
-            var tempCb;
+            var tempCb, err_1;
             var _a;
             return __generator(this, function (_b) {
-                // 请求中和 renderItem 未加载完全时无法再次触发回调
-                if (loading || ((_a = WaterflowRef.current) === null || _a === void 0 ? void 0 : _a.addIteming)) {
-                    return [2 /*return*/];
-                }
-                ;
-                if (utils_1.checkScrollEnd(event)) {
-                    loading = true;
-                    if (typeof cb === 'function') {
+                switch (_b.label) {
+                    case 0:
+                        // 请求中和 renderItem 未加载完全时无法再次触发回调
+                        if (loading || ((_a = WaterflowRef.current) === null || _a === void 0 ? void 0 : _a.addIteming)) {
+                            return [2 /*return*/];
+                        }
+                        ;
+                        if (!utils_1.checkScrollEnd(event)) return [3 /*break*/, 6];
+                        loading = true;
+                        if (!(typeof cb === 'function')) return [3 /*break*/, 6];
                         tempCb = cb();
-                        if (utils_1.isPromise(tempCb)) {
-                            tempCb.then(function () {
-                                loading = false;
-                            }).catch(function () {
-                                loading = false;
-                            });
-                        }
-                        else {
-                            loading = false;
-                        }
-                    }
+                        if (!utils_1.isPromise(tempCb)) return [3 /*break*/, 5];
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, tempCb];
+                    case 2:
+                        _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _b.sent();
+                        console.error(err_1);
+                        return [3 /*break*/, 4];
+                    case 4:
+                        loading = false;
+                        return [3 /*break*/, 6];
+                    case 5:
+                        loading = false;
+                        _b.label = 6;
+                    case 6: return [2 /*return*/];
                 }
-                return [2 /*return*/];
             });
         }); };
-    })();
+    })(), []);
     React.useImperativeHandle(ref, function () {
         var _a, _b;
         return ({
