@@ -6,6 +6,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
+import { isPromise } from 'react-native-waterflow-list/src/utils';
 import { Colunm } from './Column';
 
 interface IFlatListProps<T> extends FlatListProps<T> {
@@ -14,8 +15,9 @@ interface IFlatListProps<T> extends FlatListProps<T> {
 }
 
 export interface IColumnsProps<T> {
+  asyncHeightForItem: boolean
   numColumns: number
-  heightForItem?: (item: T) => number
+  heightForItem?: (item: T) => Promise<number> | number
   data: T[]
   renderItem: ({ item, index }: { item: T, index: number }) => JSX.Element
   keyForItem: (item: T) => string
@@ -45,25 +47,24 @@ const Columns = <T extends {
   );
   const columnsHeight = React.useMemo(() => Array(numColumns).fill(0), [numColumns]);
   const keysList = React.useMemo<string[]>(() => [], [])
-  const heightForItemAddItems = (data: T[]) => {
+  const heightForItemAddItems = async (data: T[]) => {
     let tempColumns = Array(numColumns)
       .fill([])
       .map(() => [] as T[])
-    // setColumns(tempColumns)
     for (const item of data) {
       item._keyForItem_ = props.keyForItem(item);
       // 已经渲染则跳过
       if (checkIsExist(item._keyForItem_)) { continue }
       // 获取总高度最小列
       const addItemValue = addItem(item)
-      const height = props.heightForItem!(item)
+      const height = await props.heightForItem!(item)
       columnsHeight[addItemValue.minColumnsIndex] += height;
       tempColumns = addItemValue.tempColumns
     }
     return setColumns(tempColumns)
   }
 
-  const addItems = (data: T[]): any => {
+  const addItems = (data: T[], isSyncHeightForItem: boolean = false): any => {
     if (data.length === 0) {
       return setAddIteming(false);
     }
@@ -76,11 +77,11 @@ const Columns = <T extends {
       return addItems(data);
     }
 
-    const { tempColumns } = addItem(item, addItems.bind(addItems, data));
+    const { tempColumns } = addItem(item, addItems.bind(addItems, data), isSyncHeightForItem);
     setColumns(tempColumns);
   };
 
-  const addItem = (item: T, cb?: () => typeof addItems) => {
+  const addItem = (item: T, cb?: () => typeof addItems, isSyncHeightForItem: boolean = false) => {
     const tempColumns = [...columns];
 
     // 获取总高度最小列
@@ -90,10 +91,16 @@ const Columns = <T extends {
 
     // 获取当前renderItem高度,获取后渲染下一个renderItem,直到全部渲染完毕
     if (typeof cb === 'function') {
-      item.onLayout = (e: LayoutChangeEvent) => {
+      item.onLayout = async (e: LayoutChangeEvent) => {
         // 触发一次后销毁
         item.onLayout = null
-        const height = e.nativeEvent.layout.height;
+        let height = 0
+        // 如果heightForItem为Promise则使用heightForItem返回的高度
+        if (isSyncHeightForItem) {
+          height = await props.heightForItem!(item);
+        } else {
+          height = e.nativeEvent.layout.height;
+        }
         columnsHeight[minColumnsIndex] += height;
         cb();
       }
@@ -131,8 +138,14 @@ const Columns = <T extends {
   )
 
   React.useEffect(() => {
+    if (!props.data.length) { return }
     if (typeof props.heightForItem === 'function') {
-      return heightForItemAddItems(props.data.slice())
+      if (props.asyncHeightForItem) {
+        addItems(props.data.slice(), true);
+        return
+      }
+      heightForItemAddItems(props.data.slice())
+      return
     }
     addItems(props.data.slice());
   }, [props.data]);

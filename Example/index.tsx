@@ -61,9 +61,22 @@ export default () => {
       keyForItem={item => item.id}
       numColumns={2}
       onEndReached={onLoadMore}
-      /**  如果高度已知则传此方法 */
+      /** 允许 heightForItem 为异步函数 */
+      // asyncHeightForItem={true}
+      /** 如果高度已知则传此方法 */
       // heightForItem={item => {
-      //   return item.height;
+      //    let height = 0
+      //    try {
+      //      height = await (new Promise<number>((resolve, reject) => {
+      //        Image.getSize(item.image_path, (_, imageHeight) => {
+      //          resolve(imageHeight)
+      //        }, reject)
+      //      }))
+      //    } catch (err) {
+      //      console.log({ err });
+      //    }
+      //    console.log({ item, height })
+      //    return height;
       // }}
       columnFlatListProps={{
         style: { marginHorizontal: 5, },

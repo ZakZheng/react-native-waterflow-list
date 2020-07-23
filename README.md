@@ -30,10 +30,10 @@ $ yarn add react-native-waterflow-list
 ### options
 
 - `data: T[]` : 列表数据, 数据类型必须为 `Object`
-
 - `numColumns: number` : 列数
 - `keyForItem: (item: T) => string` : 用以检测是否以渲染该数据
-- `heightForItem: (item: T) => number` : 如 renderItem 高度已知,则传入以性能和加载速度
+- `asyncHeightForItem: boolean`: 允许 heightForItem 为异步函数
+- `heightForItem: (item: T) => Promise<number> | number` : 如 renderItem 高度已知,则传入以性能和加载速度, 允许使用异步
 - `renderItem: { item, index }: { item: T, index: number }) => JSX.Element`
 - `onEndReached?: () => Promise<any> | any` : 上拉加载, 若传入 Promise 对象, 则须等待 Promise 事件回调后方能再次触发此事件. 若其他则不作处理
 - `columnsFlatListProps?: FlatListProps` : 外层 FlatList 参数
@@ -105,8 +105,11 @@ export default () => {
       keyForItem={item => item.id}
       numColumns={2}
       onEndReached={onLoadMore}
+      /** 允许heightForItem为异步函数
+      // removeClippedSubviews={true}
       /**  如果高度已知则传此方法 */
-      // heightForItem={item => {
+      // heightForItem={async item => {
+      //   await sleep(1000);
       //   return item.height;
       // }}
       columnFlatListProps={{
