@@ -66,38 +66,25 @@ var Columns = function (_a, ref) {
         .map(function () { return []; })), columns = _c[0], setColumns = _c[1];
     var columnsHeight = React.useMemo(function () { return Array(numColumns).fill(0); }, [numColumns]);
     var keysList = React.useMemo(function () { return []; }, []);
-    var heightForItemAddItems = function (data) { return __awaiter(void 0, void 0, void 0, function () {
-        var tempColumns, _i, data_1, item, addItemValue, height;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    tempColumns = Array(numColumns)
-                        .fill([])
-                        .map(function () { return []; });
-                    _i = 0, data_1 = data;
-                    _a.label = 1;
-                case 1:
-                    if (!(_i < data_1.length)) return [3 /*break*/, 4];
-                    item = data_1[_i];
-                    item._keyForItem_ = props.keyForItem(item);
-                    // 已经渲染则跳过
-                    if (checkIsExist(item._keyForItem_)) {
-                        return [3 /*break*/, 3];
-                    }
-                    addItemValue = addItem(item);
-                    return [4 /*yield*/, props.heightForItem(item)];
-                case 2:
-                    height = _a.sent();
-                    columnsHeight[addItemValue.minColumnsIndex] += height;
-                    tempColumns = addItemValue.tempColumns;
-                    _a.label = 3;
-                case 3:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 4: return [2 /*return*/, setColumns(tempColumns)];
+    var heightForItemAddItems = function (data) {
+        var tempColumns = Array(numColumns)
+            .fill([])
+            .map(function () { return []; });
+        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+            var item = data_1[_i];
+            item._keyForItem_ = props.keyForItem(item);
+            // 已经渲染则跳过
+            if (checkIsExist(item._keyForItem_)) {
+                continue;
             }
-        });
-    }); };
+            // 获取总高度最小列
+            var addItemValue = addItem(item);
+            var height = props.heightForItem(item);
+            columnsHeight[addItemValue.minColumnsIndex] += height;
+            tempColumns = addItemValue.tempColumns;
+        }
+        return setColumns(tempColumns);
+    };
     var addItems = function (data, isSyncHeightForItem) {
         if (isSyncHeightForItem === void 0) { isSyncHeightForItem = false; }
         if (data.length === 0) {
@@ -129,7 +116,7 @@ var Columns = function (_a, ref) {
                             item.onLayout = null;
                             height = 0;
                             if (!isSyncHeightForItem) return [3 /*break*/, 2];
-                            return [4 /*yield*/, props.heightForItem(item)];
+                            return [4 /*yield*/, props.asyncHeightForItem(item)];
                         case 1:
                             height = _a.sent();
                             return [3 /*break*/, 3];

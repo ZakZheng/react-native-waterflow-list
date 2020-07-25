@@ -15,9 +15,9 @@ interface IFlatListProps<T> extends FlatListProps<T> {
 }
 
 export interface IColumnsProps<T> {
-  asyncHeightForItem: boolean
+  asyncHeightForItem?: (item: T) => Promise<number>
   numColumns: number
-  heightForItem?: (item: T) => Promise<number> | number
+  heightForItem?: (item: T) => number
   data: T[]
   renderItem: ({ item, index }: { item: T, index: number }) => JSX.Element
   keyForItem: (item: T) => string
@@ -47,7 +47,7 @@ const Columns = <T extends {
   );
   const columnsHeight = React.useMemo(() => Array(numColumns).fill(0), [numColumns]);
   const keysList = React.useMemo<string[]>(() => [], [])
-  const heightForItemAddItems = async (data: T[]) => {
+  const heightForItemAddItems = (data: T[]) => {
     let tempColumns = Array(numColumns)
       .fill([])
       .map(() => [] as T[])
@@ -57,7 +57,7 @@ const Columns = <T extends {
       if (checkIsExist(item._keyForItem_)) { continue }
       // 获取总高度最小列
       const addItemValue = addItem(item)
-      const height = await props.heightForItem!(item)
+      const height = props.heightForItem!(item)
       columnsHeight[addItemValue.minColumnsIndex] += height;
       tempColumns = addItemValue.tempColumns
     }
@@ -97,7 +97,7 @@ const Columns = <T extends {
         let height = 0
         // 如果heightForItem为Promise则使用heightForItem返回的高度
         if (isSyncHeightForItem) {
-          height = await props.heightForItem!(item);
+          height = await props.asyncHeightForItem!(item);
         } else {
           height = e.nativeEvent.layout.height;
         }

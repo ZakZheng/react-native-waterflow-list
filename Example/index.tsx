@@ -62,21 +62,20 @@ export default () => {
       numColumns={2}
       onEndReached={onLoadMore}
       /** 允许 heightForItem 为异步函数 */
-      // asyncHeightForItem={true}
+      // asyncHeightForItem={async item => {
+      //   let height = 0
+      //   try {
+      //     height = await (new Promise<number>((resolve, reject) => {
+      //       Image.getSize(item.image_path, (_, imageHeight) => {
+      //         resolve(imageHeight)
+      //       }, reject)
+      //     }))
+      //   } catch (err) { console.log({ err }); }
+      //   return height;
+      // }}
       /** 如果高度已知则传此方法 */
       // heightForItem={item => {
-      //    let height = 0
-      //    try {
-      //      height = await (new Promise<number>((resolve, reject) => {
-      //        Image.getSize(item.image_path, (_, imageHeight) => {
-      //          resolve(imageHeight)
-      //        }, reject)
-      //      }))
-      //    } catch (err) {
-      //      console.log({ err });
-      //    }
-      //    console.log({ item, height })
-      //    return height;
+      //   return item.height;
       // }}
       columnFlatListProps={{
         style: { marginHorizontal: 5, },

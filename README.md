@@ -7,8 +7,8 @@
 ## ScreenShots
 
 <p float="left">
-<img src="./android.gif" width="25%">
-<img src="./ios.gif" width="25%">
+<img src="./android.gif" width="30%">
+<img src="./ios.gif" width="30%">
 </p>
 
 ## Getting started
@@ -32,8 +32,8 @@ $ yarn add react-native-waterflow-list
 - `data: T[]` : 列表数据, 数据类型必须为 `Object`
 - `numColumns: number` : 列数
 - `keyForItem: (item: T) => string` : 用以检测是否以渲染该数据
-- `asyncHeightForItem: boolean`: 允许 heightForItem 为异步函数
-- `heightForItem: (item: T) => Promise<number> | number` : 如 renderItem 高度已知,则传入以性能和加载速度, 允许使用异步
+- `heightForItem: (item: T) => number` : 如 renderItem 高度已知,则传入以提高性能和加载速度
+- `asyncHeightForItem: (item: T) => Promise(number)`: 如item的高度为异步获取的,则通过该函数返回item的真实高度
 - `renderItem: { item, index }: { item: T, index: number }) => JSX.Element`
 - `onEndReached?: () => Promise<any> | any` : 上拉加载, 若传入 Promise 对象, 则须等待 Promise 事件回调后方能再次触发此事件. 若其他则不作处理
 - `columnsFlatListProps?: FlatListProps` : 外层 FlatList 参数
@@ -41,7 +41,7 @@ $ yarn add react-native-waterflow-list
 
 ## Usage Example
 
-```javascript
+```typescript
 import * as React from 'react';
 import { Dimensions, Image, RefreshControl, Text, View } from 'react-native';
 import { IColumnsHandles } from 'react-native-waterflow-list/src/Columns';
@@ -105,11 +105,20 @@ export default () => {
       keyForItem={item => item.id}
       numColumns={2}
       onEndReached={onLoadMore}
-      /** 允许heightForItem为异步函数
-      // removeClippedSubviews={true}
-      /**  如果高度已知则传此方法 */
-      // heightForItem={async item => {
-      //   await sleep(1000);
+      /** 允许 heightForItem 为异步函数 */
+      // asyncHeightForItem={async item => {
+      //   let height = 0
+      //   try {
+      //     height = await (new Promise<number>((resolve, reject) => {
+      //       Image.getSize(item.image_path, (_, imageHeight) => {
+      //         resolve(imageHeight)
+      //       }, reject)
+      //     }))
+      //   } catch (err) { console.log({ err }); }
+      //   return height;
+      // }}
+      /** 如果高度已知则传此方法 */
+      // heightForItem={item => {
       //   return item.height;
       // }}
       columnFlatListProps={{
@@ -135,15 +144,4 @@ export default () => {
     />
   );
 };
-
-const renderItem = item => {
-  return (
-    <View style={{ marginHorizontal: 5, paddingTop: 10 }}>
-      <Image style={{ height: item.height, width: `100%` }} source={{ uri: item.image_path }} />
-      <Text>ID:{item.id}</Text>
-      <Text>{item.text}</Text>
-    </View>
-  );
-};
-
 ```
