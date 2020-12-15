@@ -105,6 +105,8 @@ export default () => {
       keyForItem={item => item.id}
       numColumns={2}
       onEndReached={onLoadMore}
+      //自定义滚动监听(需要的话)
+      onScroll={(e) => {console.log(e)}}
       /** 允许 heightForItem 为异步函数 */
       // asyncHeightForItem={async item => {
       //   let height = 0

@@ -22,6 +22,7 @@ export interface IColumnsProps<T> {
   renderItem: ({ item, index }: { item: T, index: number }) => JSX.Element
   keyForItem: (item: T) => string
   onEndReached: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 
   columnsFlatListProps?: IFlatListProps<T>
   columnFlatListProps?: IFlatListProps<T>
@@ -41,16 +42,16 @@ const Columns = <T extends {
 
   const [addIteming, setAddIteming] = React.useState(false)
   const [columns, setColumns] = React.useState<T[][]>(
-    Array(numColumns)
-      .fill('')
-      .map(() => []),
+      Array(numColumns)
+          .fill('')
+          .map(() => []),
   );
   const columnsHeight = React.useMemo(() => Array(numColumns).fill(0), [numColumns]);
   const keysList = React.useMemo<string[]>(() => [], [])
   const heightForItemAddItems = (data: T[]) => {
     let tempColumns = Array(numColumns)
-      .fill([])
-      .map(() => [] as T[])
+        .fill([])
+        .map(() => [] as T[])
     for (const item of data) {
       item._keyForItem_ = props.keyForItem(item);
       // 已经渲染则跳过
@@ -86,7 +87,7 @@ const Columns = <T extends {
 
     // 获取总高度最小列
     const minColumnsIndex = [...columnsHeight].indexOf(
-      Math.min.apply(Math, [...columnsHeight]),
+        Math.min.apply(Math, [...columnsHeight]),
     );
 
     // 获取当前renderItem高度,获取后渲染下一个renderItem,直到全部渲染完毕
@@ -118,23 +119,23 @@ const Columns = <T extends {
     }
     keysList.splice(0, keysList.length)
     setColumns(
-      Array(numColumns)
-        .fill([])
-        .map(() => []),
+        Array(numColumns)
+            .fill([])
+            .map(() => []),
     );
   };
 
   // 通过 _keyForItem_ 检查是否已经渲染
   const checkIsExist = React.useCallback(
-    (key: string) => {
-      const check = keysList.indexOf(key) !== -1
-      // 如果未渲染则保存key
-      if (!check) {
-        keysList.push(key)
-      }
-      return check
-    },
-    [columns, keysList],
+      (key: string) => {
+        const check = keysList.indexOf(key) !== -1
+        // 如果未渲染则保存key
+        if (!check) {
+          keysList.push(key)
+        }
+        return check
+      },
+      [columns, keysList],
   )
 
   React.useEffect(() => {
@@ -156,24 +157,27 @@ const Columns = <T extends {
   }));
 
   return (
-    <FlatList
-      data={columns}
-      keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
-      onScroll={props.onEndReached}
-      removeClippedSubviews={true}
-      {...columnsFlatListProps}
-      numColumns={props.numColumns}
-      renderItem={({ item, index }: { item: T, index: number }) => {
-        return <Colunm
-          columnFlatListProps={props.columnFlatListProps}
-          key={`column-${index}`}
-          listKey={`column-${index}`}
+      <FlatList
+          data={columns}
           keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
-          data={item}
-          renderItem={props.renderItem}
-        />
-      }}
-    />
+          onScroll={(e: any) => {
+            props.onEndReached(e);
+            props.onScroll && props.onScroll(e)
+          }}
+          removeClippedSubviews={true}
+          {...columnsFlatListProps}
+          numColumns={props.numColumns}
+          renderItem={({ item, index }: { item: T, index: number }) => {
+            return <Colunm
+                columnFlatListProps={props.columnFlatListProps}
+                key={`column-${index}`}
+                listKey={`column-${index}`}
+                keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
+                data={item}
+                renderItem={props.renderItem}
+            />
+          }}
+      />
   )
 }
 export default React.forwardRef(Columns as React.RefForwardingComponent<IColumnsHandles, IColumnsProps<any>>)
