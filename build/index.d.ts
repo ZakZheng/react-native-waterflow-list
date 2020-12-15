@@ -1,4 +1,5 @@
-import { IColumnsProps } from './Columns';
+import * as React from 'react';
+import { IColumnsHandles, IColumnsProps } from './Columns';
 export interface IWaterflowProps<T> {
     data: T[];
     numColumns: number;
@@ -9,5 +10,5 @@ export interface IWaterflowProps<T> {
     columnFlatListProps: IColumnsProps<T>['columnFlatListProps'];
     onEndReached: () => Promise<any>;
 }
-declare const _default: any;
+declare const _default: React.ForwardRefExoticComponent<IColumnsProps<any> & React.RefAttributes<IColumnsHandles>>;
 export default _default;

@@ -22,12 +22,12 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Colunm = void 0;
 var React = require("react");
 var react_native_1 = require("react-native");
 function Colunm(_a) {
-    var _b;
     var columnFlatListProps = _a.columnFlatListProps, renderItem = _a.renderItem, props = __rest(_a, ["columnFlatListProps", "renderItem"]);
-    return (<react_native_1.FlatList removeClippedSubviews={true} {...props} {...columnFlatListProps} style={[{ flex: 1, }, __assign({}, (_b = columnFlatListProps) === null || _b === void 0 ? void 0 : _b.style)]} renderItem={function (_a) {
+    return (<react_native_1.FlatList removeClippedSubviews={true} {...props} {...columnFlatListProps} style={[{ flex: 1, }, __assign({}, columnFlatListProps === null || columnFlatListProps === void 0 ? void 0 : columnFlatListProps.style)]} renderItem={function (_a) {
         var item = _a.item, index = _a.index;
         return <react_native_1.View key={item._keyForItem_} onLayout={item.onLayout}>
           {renderItem({ item: item, index: index })}

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkScrollEnd = exports.sleep = exports.isPromise = exports.flat = void 0;
 var react_native_1 = require("react-native");
 // 扁平化数组
 function flat(arr) {
