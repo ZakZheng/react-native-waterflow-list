@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-waterflow-list",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "React Native 瀑布流组件",
   "main": "build/index.js",
   "types": "build/index.d.ts",
