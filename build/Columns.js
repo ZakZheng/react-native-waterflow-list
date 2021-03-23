@@ -173,7 +173,7 @@ var Columns = function (_a, ref) {
         clear: clear,
         addIteming: addIteming,
     }); });
-    return (<react_native_1.FlatList data={columns} keyExtractor={function (columnItem) { return "item-" + columnItem._keyForItem_; }} onScroll={function (e) {
+    return (<react_native_1.FlatList data={props.data.length ? columns : null} keyExtractor={function (columnItem) { return "item-" + columnItem._keyForItem_; }} onScroll={function (e) {
         props.onEndReached(e);
         props.onScroll && props.onScroll(e);
     }} removeClippedSubviews={true} {...columnsFlatListProps} numColumns={props.numColumns} renderItem={function (_a) {

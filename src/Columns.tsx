@@ -6,9 +6,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
-import { isPromise } from 'react-native-waterflow-list/src/utils';
 import { Colunm } from './Column';
-
 interface IFlatListProps<T> extends FlatListProps<T> {
   data?: any
   renderItem?: any
@@ -22,7 +20,7 @@ export interface IColumnsProps<T> {
   renderItem: ({ item, index }: { item: T, index: number }) => JSX.Element
   keyForItem: (item: T) => string
   onEndReached: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 
   columnsFlatListProps?: IFlatListProps<T>
   columnFlatListProps?: IFlatListProps<T>
@@ -158,7 +156,7 @@ const Columns = <T extends {
 
   return (
     <FlatList
-      data={columns}
+      data={props.data.length ? columns as any : null}
       keyExtractor={(columnItem: T) => `item-${columnItem._keyForItem_}`}
       onScroll={(e: any) => {
         props.onEndReached(e);

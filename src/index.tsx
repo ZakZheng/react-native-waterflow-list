@@ -67,4 +67,4 @@ const WaterFlow = <T extends {}>(props: IWaterflowProps<T>, ref: typeof React.us
   );
 };
 
-export default React.forwardRef(WaterFlow as React.RefForwardingComponent<IColumnsHandles, IColumnsProps<any>>)
+export default React.forwardRef(WaterFlow as unknown as React.RefForwardingComponent<IColumnsHandles, IColumnsProps<any>>)
